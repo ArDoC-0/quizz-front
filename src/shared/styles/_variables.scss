@@ -1,17 +1,19 @@
-$primary: #2563EB;
-$primary-hover: #1D4ED8;
+// --- PALETTE DE COULEURS ---
+$navy-dark: #0f172a;      // Sidebar & Background sombre
+$navy-light: #1e293b;     // Éléments secondaires sombres
+$slate-bg: #f8fafc;       // Background principal (clair)
+$accent-blue: #3b82f6;    // Boutons, indicateurs actifs
+$success-green: #22c55e;  // Bonnes réponses / Succès
+$error-red: #ef4444;      // Mauvaises réponses / Alertes
 
-$secondary: #60A5FA;
-$accent: #7C3AED;
+// --- TYPOGRAPHIE ---
+$font-main: 'Inter', system-ui, sans-serif;
+$text-main: #1e293b;
+$text-muted: #64748b;
 
-$background: #F9FAFB;
-$surface: #FFFFFF;
+// --- EFFETS & BORDURES ---
+$radius-lg: 12px;
+$radius-md: 8px;
+$shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+$glass-border: rgba(255, 255, 255, 0.2);
 
-$text-primary: #111827;
-$text-secondary: #6B7280;
-
-$border: #E5E7EB;
-
-$success: #10B981;
-$error: #EF4444;
-$warning: #F59E0B;

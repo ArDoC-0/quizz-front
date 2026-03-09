@@ -1,12 +1,23 @@
+@use "variables" as v; // Obligatoire pour utiliser v.$glass-border ici
+
 @mixin flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+// Mixin Glassmorphism (Renommé pour correspondre à ton appel)
+@mixin glass($opacity: 0.15, $blur: 10px) {
+  background: rgba(255, 255, 255, $opacity);
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
 @mixin card {
-  background: $surface;
-  border: 1px solid $border;
+  background: v.$slate-bg; // Correction : utilisation de v.
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   padding: 20px;
 }
