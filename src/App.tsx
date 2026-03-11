@@ -6,9 +6,7 @@ import LoginPage from './features/auth/LogInPage'
 function App() {
 
   return (
-    <>
     <LoginPage/>
-    </>
   )
 }
 
