@@ -26,5 +26,7 @@ export default defineConfig({
       // Configuration de l'alias pour correspondre à import
       '@': path.resolve(__dirname, './src'),
     },
+        dedupe: ['react', 'react-dom']
+
   },
 })
