@@ -1,0 +1,62 @@
+.user-created-popup{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:14px;
+  padding:20px;
+}
+
+.icon-success{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:#22c55e;
+  color:white;
+  font-size:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+}
+
+.title{
+  font-size:20px;
+  font-weight:600;
+}
+
+.description{
+  color:#6b7280;
+}
+
+.identifier-box{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:#f3f4f6;
+  padding:10px 16px;
+  border-radius:8px;
+}
+
+.identifier-text strong{
+  margin-left:6px;
+}
+
+.copy-button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:13px;
+}
+
+.copy-button:hover{
+  background:#1d4ed8;
+}
+
+.info{
+  font-size:13px;
+  color:#9ca3af;
+}

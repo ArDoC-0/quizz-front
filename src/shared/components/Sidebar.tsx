@@ -54,17 +54,7 @@ const Sidebar = ({ children=null, role = 'admin' }) => {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {/* TOP BAR / HEADER */}
-        <Header/>
 
-        {/* CONTENT */}
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-6xl mx-auto">
-            {/* {children} */}
-          </div>
-        </div>
-      </main>
     </div>
   );
 };
