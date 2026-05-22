@@ -9,12 +9,12 @@ export const authServices = {
 
     // 2. Connecte l'utilisateur
     async login(credentials: { identifiant: string; password: string }) {
-        return await attemptAuth(credentials);
+        return (await attemptAuth(credentials));
     },
 
     // 3. Récupère l'utilisateur connecté
     async me() {
-        return await api.get<user>('/api/user', {});
+        return await api.get<user>('api/me', {});
     },
 
     // 4. Déconnexion

@@ -17,7 +17,7 @@ const initialState: AuthState = {
 // Action asynchrone pour vérifier la session au chargement
 export const initializeAuth = createAsyncThunk<user | void >('auth/initialize', async () => {
   const response = await authServices.me();
-  return response.data;
+  return response.data.data;
 });
 
 const authSlice = createSlice({

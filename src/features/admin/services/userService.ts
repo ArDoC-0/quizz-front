@@ -1,9 +1,9 @@
 import type { user } from "../../../api/auth/authApi"
-import { createUser, professors, type UserForm } from "../../../api/user/userApi"
+import { createUser, professors, type CreateUserForm, type UserForm } from "../../../api/user/userApi"
 
 export const userService = {
 
-    create:  (body: UserForm) => {
+    create:  (body: CreateUserForm) => {
         return createUser(body)
     },
 

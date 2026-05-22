@@ -4,9 +4,15 @@ import { Outlet } from 'react-router-dom'
 import Header from '../shared/components/Header'
 
 export default function AdminLayout() {
+      const menuItems = [
+      { name: 'Dashboards', icon: '🏠', link:'/' },
+      { name: 'Questions', icon: '👤', link:'/users' },
+      { name: 'Statistiques', icon: '📊', link:'/stats' }
+    ]
+  ;
     return (
         <div className='flex layout'>
-            <Sidebar />
+            <Sidebar menuItems={menuItems} role={'admin'} />
             {/* <div className="bg-gray-200">
                 <Header />
             </div> */}

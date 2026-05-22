@@ -3,6 +3,7 @@ import "./LoginPage.scss"
 import { useAppDispatch } from "../../shared/hooks/hooks";
 import { authServices } from "./services/authService";
 import { setUser } from "./authSlice";
+import { Navigate } from "react-router-dom";
 
 function LoginPage() {
 
@@ -26,11 +27,12 @@ function LoginPage() {
 
     try {
       // 1. Appel au service (CSRF + Login via attemptAuth)
-      const user = (await authServices.login(credentials)).data;
-
-      console.log(user)
-      dispatch(setUser(user));
-
+      const response = (await authServices.login(credentials));
+        const user = await response.data.data
+        console.log(user)
+        dispatch(setUser(user));
+        return <Navigate to={'/admin/dashboard'} replace />
+      // const 
       // 3. Direction le Dashboard !
     } catch (err: any) {
       // Gestion fine de l'erreur
@@ -58,7 +60,7 @@ function LoginPage() {
         </div>
         {/* erreur */}
         {errorMessage && (
-          <div className="error-alert animate-shake">
+          <div className="error-alert text-center text-red-600 animate-shake">
             {errorMessage}
           </div>
         )}

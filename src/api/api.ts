@@ -6,9 +6,9 @@ const axiosParams = {
     withCredentials: true,
     withXSRFToken: true,
     headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
         'Accept': 'application/json',
-        "Access-Control-Allow-Origin": true,
+        // "Access-Control-Allow-Origin": true,
     },
 }
 

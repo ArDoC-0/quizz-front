@@ -1,26 +1,17 @@
 import React from 'react';
 import "./sidebar.scss"
 import Header from './Header';
+import { useAppSelector } from '../hooks/hooks';
+import { roleName } from '../utils/utils';
 
-const Sidebar = ({ children=null, role = 'admin' }) => {
-  // Menu dynamique selon le rôle
-  const menuItems = {
-    admin: [
-      { name: 'Dashboard', icon: '🏠' },
-      { name: 'Utilisateurs', icon: '👤' },
-      { name: 'Statistiques', icon: '📊' }
-    ],
-    prof: [
-      { name: 'Questions', icon: '📝' },
-      { name: 'Corrections', icon: '📑' },
-      { name: 'Terminal', icon: '💻' }
-    ],
-    student: [
-      { name: 'Examens', icon: '✍️' },
-      { name: 'Résultats', icon: '🏆' }
-    ]
-  };
+type menuItems = {
+  name: string,
+  icon: string,
+  link: string
+}
+const Sidebar = ({menuItems, role}:{menuItems: menuItems[], role:string})  => {
 
+  const user = useAppSelector(state => state.auth.user)
   return (
     <div className="flex h-screen bg-slate-50 font-sans antialiased">
       {/* SIDEBAR FIXED THEME */}
@@ -31,7 +22,7 @@ const Sidebar = ({ children=null, role = 'admin' }) => {
         </div>
 
         <nav className="flex-1 mt-4">
-          {menuItems[role].map((item, index) => (
+          {menuItems.map((item: menuItems, index: number) => (
             <div
               key={index}
               className={`sidebar-item flex items-center px-6 py-4 cursor-pointer hover:text-white ${index === 0 ? 'active' : ''}`}
@@ -46,8 +37,8 @@ const Sidebar = ({ children=null, role = 'admin' }) => {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-slate-700"></div>
             <div className="text-sm">
-              <p className="text-white font-semibold">User Name</p>
-              <p className="text-xs capitalize text-slate-500">{role}</p>
+              <p className="text-white font-semibold">{user?.name +" " +user?.first_name}</p>
+              <p className="text-xs capitalize text-slate-500">{roleName(user?.id)}</p>
             </div>
           </div>
         </div>

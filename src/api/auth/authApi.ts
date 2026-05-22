@@ -12,10 +12,13 @@ export type user = {
     id: number
     name: string
     first_name: string
+    email?: string
+    phone_number?: string
     identifiant: string
     profil: string
-    professor_id: number|string|null
+    professor_id: number | string | null
     role_id: number
+
 }
 
 export const attemptAuth = async (body: loginBody) => {

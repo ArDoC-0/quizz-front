@@ -6,27 +6,31 @@ import type { trainers, UserForm } from "../../../api/user/userApi";
 import Popup from "../../../shared/components/PopUp";
 import UserCreatedPopupContent from "./components/UserCreationMessage";
 import type { user } from "../../../api/auth/authApi";
+import { toFormData } from "axios";
+import { checkForm } from "../../../shared/utils/utils";
 
 type response = {
     identifiant: string
 }
 
 export default function CreateUserForm() {
-    const [pop, setpop] = useState(true)
+    const [pop, setpop] = useState(false)
+    const [actionType, setActionType] = useState('add_trainor')
     const [response, setResponse] = useState<response>({
         identifiant: ''
     })
     const [trainers, setTrainers] = useState<trainers>([])
+
+    const [formvalid, setFormValid] = useState(false)
 
     const [form, setForm] = useState<UserForm>({
         name: "",
         first_name: "",
         email: "",
         password: "hopes_2026",
-        role: 3,
-        profil: "",
-        professor_id: null,
-        photo: undefined,
+        role_id: 3,
+        professor_id: '',
+        profil: undefined,
     });
 
     const [preview, setPreview] = useState<string | null>(null);
@@ -35,19 +39,40 @@ export default function CreateUserForm() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, files } = e.target as HTMLInputElement;
-        if (name === "photo" && files && files[0]) {
-            setForm(prev => ({ ...prev, photo: files[0] }));
+        if (name === "profil" && files && files[0]) {
+            setForm(prev => ({ ...prev, profil: files[0] }));
             setPreview(URL.createObjectURL(files[0]));
         } else {
             setForm(prev => ({ ...prev, [name]: value }));
         }
+
     };
+
+    const handleRoleSelection = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+
+        const role = Number(value);
+
+        setActionType(role === 2 ? 'add_trainor' : 'add_student');
+
+        setForm(prev => ({
+            ...prev,
+            [name]: role
+        }));
+    }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
         try {
-            const response = await userService.create(form)
-            setResponse({identifiant: response.data.identifiant})
+            const formdata = toFormData(form)
+            formdata.append("action_type", actionType
+            )
+            console.log(formdata);
+            const response = await userService.create(
+                formdata
+            )
+            setResponse({ identifiant: response.data.identifiant })
             setpop(true)
             console.log(response.data)
             setForm({
@@ -55,10 +80,9 @@ export default function CreateUserForm() {
                 first_name: "",
                 email: "",
                 password: "hopes_2026",
-                role: 3,
-                profil: "",
+                role_id: 3,
+                profil: undefined,
                 professor_id: null,
-                photo: undefined,
             })
         } catch (error) {
             console.error(error);
@@ -71,12 +95,16 @@ export default function CreateUserForm() {
             const response = (await userService.trainers()).data
             setTrainers(response)
         })()
-        
+
         return () => {
 
         }
     }, [])
-    
+
+    useEffect(()=> {
+        setFormValid(checkForm(form))
+    }, [])
+
     return (
         <div className="w-[70%] m-auto">
             <Popup open={pop} onClose={() => setpop(false)}>
@@ -155,10 +183,11 @@ export default function CreateUserForm() {
                                 Rôle
                             </label>
                             <select
-                                name="role"
-                                id="role"
-                                value={form.role}
-                                onChange={handleChange}
+                                defaultValue={2}
+                                name="role_id"
+                                id="role_id"
+                                // value={form.role_id}
+                                onChange={handleRoleSelection}
                                 className="
                                     p-2 
                                     text-gray-800 
@@ -173,13 +202,13 @@ export default function CreateUserForm() {
                                     transition-all
                                     "
                             >
-                                <option value={3}>Élève</option>
-                                <option value={2}>Professeur</option>
+                                <option value={2}>Formateur</option>
+                                <option value={3} >Élève</option>
                             </select>
                         </div>
 
                         {/* Prof assignation for admin*/}
-                        {auth?.role_id === 2 && <div className="flex flex-col flex-1">
+                        {(form.role_id === 3) && <div className="flex flex-col flex-1">
                             <label htmlFor="role" className="text-gray-600 text-sm font-medium mb-1">
                                 Formateur
                             </label>
@@ -203,23 +232,21 @@ export default function CreateUserForm() {
                                     "
                             >
                                 {
-                                    trainers.map((trainer: user) => <option value={trainer.id}>{trainer.name + ' ' + trainer.first_name}</option>)
+                                    trainers.map((trainer: user) => <option key={trainer.id} value={trainer.id}>{trainer.name + ' ' + trainer.first_name}</option>)
                                 }
-                                <option value={1}>Tsiry</option>
-                                <option value={2}>Professeur</option>
-                                
+
                             </select>
                         </div>}
 
                         {/* Photo de profil */}
                         <div className="flex flex-col flex-1">
                             <label htmlFor="photo" className="text-gray-600 text-sm font-medium mb-1">
-                                Photo de profil
+                                Photo 
                             </label>
                             <input
                                 type="file"
-                                name="photo"
-                                id="photo"
+                                name="profil"
+                                id="profil"
                                 accept="image/*"
                                 onChange={handleChange}
                                 className="
