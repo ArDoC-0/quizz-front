@@ -5,9 +5,9 @@ import { toFormData } from 'axios'
 
 function Create() {
     const initialState : form = {
-        subject: '',
+        question: '',
         duration: 1.6,
-        note: 2,
+        score: 2,
         code: '',
         attachments: [],
         subject_id: [],

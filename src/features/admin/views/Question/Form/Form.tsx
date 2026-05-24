@@ -4,9 +4,9 @@ import Preview from '../../components/Preview'
 import { data } from 'react-router-dom'
 
 export interface form {
-    subject: string
+    question: string
     duration: number | string
-    note: number | string
+    score: number | string
     attachments?:  File[] | []
     subject_id?: number[]
     code: string
@@ -137,22 +137,22 @@ function Form({ form, setForm, submit }: { form: form, setForm: React.Dispatch<R
                     submit()
                     }} className="p-4">
 
-                    <textarea onChange={handleChange} name='code' placeholder='Ecrire ....' className="editor mb-4 border border-gray-300 rounded-3xl p-4 w-full">
+                    <textarea onChange={handleChange} name='question' placeholder='Ecrire ....' className="editor mb-4 border border-gray-300 rounded-3xl p-4 w-full">
 
                     </textarea>
 
                     <div className="inputs flex flex-wrap gap-2 justify-between">
                         <div className="border-gray-500 mb-4 border-b flex-1">
-                            <label htmlFor="photo" className="text-gray-600 text-sm font-medium mb-1">
+                            <label htmlFor="duration" className="text-gray-600 text-sm font-medium mb-1">
                                 Durée
                             </label>
-                            <input type="number" name="duration" onChange={handleChange} className='w-full' placeholder='1.5 minutes' id="" />
+                            <input type="number" name="duration" onChange={handleChange} className='w-full' placeholder='1.5 minutes' id="duration" />
                         </div>
                         <div className="border-gray-500 mb-4 border-b flex-1">
-                            <label htmlFor="photo" className="text-gray-600 text-sm font-medium mb-1">
+                            <label htmlFor="score" className="text-gray-600 text-sm font-medium mb-1">
                                 Note
                             </label>
-                            <input type="number" name="note" onChange={handleChange} className='w-full' placeholder='2 points' id="" />
+                            <input type="number" name="score" onChange={handleChange} className='w-full' placeholder='2 points' id="score" />
                         </div>
                         <select multiple name="subject_id" onChange={handleChange} className='subjects b-gray-300 mb-4 text-[1rem] py-1 px-2 rounded-xl ' id="">
                             <option disabled className='disabled'>
@@ -167,15 +167,15 @@ function Form({ form, setForm, submit }: { form: form, setForm: React.Dispatch<R
                         </select>
 
                         <div className="mb-4 w-full">
-                            <label htmlFor="photo" className="text-gray-600 text-sm font-medium">
+                            <label htmlFor="code" className="text-gray-600 text-sm font-medium">
                                 Ajouter du code
                             </label>
-                            <textarea name="code" onChange={(e) => handleChange(e)} className='editor rounded-2xl shadow-lg w-full mt-2 p-4 h-56' placeholder='Coller ici...' id=""></textarea>
+                            <textarea name="code" onChange={(e) => handleChange(e)} id='code' className='editor rounded-2xl shadow-lg w-full mt-2 p-4 h-56' placeholder='Coller ici...' id=""></textarea>
                         </div>
 
                         {/* attachments */}
                         <div className="flex flex-col w-full mb-4">
-                            <label htmlFor="photo" className="text-gray-600 text-sm font-medium mb-1">
+                            <label htmlFor="attachments" className="text-gray-600 text-sm font-medium mb-1">
                                 Fichier (image/video/text/document)
                             </label>
                             <input
