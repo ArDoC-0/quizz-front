@@ -1,9 +1,10 @@
+import type { GenericFormData } from "axios"
 import type { user } from "../../../api/auth/authApi"
 import { createUser, professors, type CreateUserForm, type UserForm } from "../../../api/user/userApi"
 
 export const userService = {
 
-    create:  (body: CreateUserForm) => {
+    create:  (body: GenericFormData) => {
         return createUser(body)
     },
 

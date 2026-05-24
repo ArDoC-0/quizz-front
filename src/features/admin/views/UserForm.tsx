@@ -13,6 +13,7 @@ type response = {
     identifiant: string
 }
 
+
 export default function CreateUserForm() {
     const [pop, setpop] = useState(false)
     const [actionType, setActionType] = useState('add_trainor')
@@ -33,7 +34,6 @@ export default function CreateUserForm() {
         profil: undefined,
     });
 
-    const [preview, setPreview] = useState<string | null>(null);
 
     const auth = useAppSelector((state) => state.auth).user
 

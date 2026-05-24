@@ -1,11 +1,13 @@
-import React, { useState, type ChangeEvent, type Dispatch } from 'react'
+import React, { useRef, useState, type ChangeEvent, type Dispatch } from 'react'
 import './form.scss'
+import Preview from '../../components/Preview'
+import { data } from 'react-router-dom'
 
 export interface form {
     subject: string
     duration: number | string
     note: number | string
-    attachments?: FileList | []
+    attachments?:  File[] | []
     subject_id?: number[]
     code: string
     answers?: answer[]
@@ -17,14 +19,35 @@ export interface answer {
     is_correct: boolean
 }
 
-function Form({form, setForm, submit }: {form: form, setForm: React.Dispatch<React.SetStateAction<form>>, submit: () => void}) {
 
+type filePreview = {
+    type: string
+    url: string | null
+    name: string
+}
+
+function Form({ form, setForm, submit }: { form: form, setForm: React.Dispatch<React.SetStateAction<form>>, submit: () => void }) {
+
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const [preview, setPreview] = useState<filePreview[]>([]);
+    
     const [questionType, setQuestionType] = useState<'qcm' | 'redaction'>('qcm')
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLInputElement | HTMLSelectElement, Element>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLInputElement | HTMLSelectElement, Element>) => {
         const { name, value, files } = e.target as HTMLInputElement;
         if (name === "attachments" && files) {
-            setForm((prev) => ({ ...prev, attachments: files }))
+            
+            setForm((prev) => ({ ...prev, attachments: Array.from(files) }))
+            const previews = []
+            for (let index = 0; index < files.length; index++) {
+                previews.push({
+                    type: files[index].type,
+                    name: files[index].name,
+                    url: URL.createObjectURL(files[index])
+                })
+
+            }
+            setPreview(previews)
             console.log(form);
 
         } else {
@@ -82,19 +105,41 @@ function Form({form, setForm, submit }: {form: form, setForm: React.Dispatch<Rea
         })
     }
 
-    console.log(form, questionType);
+    const deleteAttachment = (index: number) => {
+        const attachments = form.attachments
+        const dataTransfer = new DataTransfer()
+
+        for (let i = 0; i < attachments.length; i++) {
+            if(index !== i){
+                dataTransfer.items.add(attachments[i])
+            }
+        }
+
+        fileInputRef.current.files = dataTransfer.files
+        setForm({
+            ...form,
+            attachments: attachments?.filter((_, i) => i!==index)
+        })
+
+        setPreview([
+            ...preview.filter((_, i: number)=> i !== index)])
+    }
+
+    console.log(form, questionType, preview);
 
     return (
         <div className=" grid grid-cols-3 gap-2">
 
             <div className="bg-white col-span-2 px-8 py-6 rounded-3xl">
                 <h3 className="text ps-4">Créer/Modifer une question</h3>
-                <form onSubmit={(e) => e.preventDefault()} className="p-4">
+                <form onSubmit={(e) => {
+                    e.preventDefault()
+                    submit()
+                    }} className="p-4">
 
-                    <div className="editor mb-4 border border-gray-300 rounded-3xl w-full">
+                    <textarea onChange={handleChange} name='code' placeholder='Ecrire ....' className="editor mb-4 border border-gray-300 rounded-3xl p-4 w-full">
 
-                    </div>
-
+                    </textarea>
 
                     <div className="inputs flex flex-wrap gap-2 justify-between">
                         <div className="border-gray-500 mb-4 border-b flex-1">
@@ -131,13 +176,13 @@ function Form({form, setForm, submit }: {form: form, setForm: React.Dispatch<Rea
                         {/* attachments */}
                         <div className="flex flex-col w-full mb-4">
                             <label htmlFor="photo" className="text-gray-600 text-sm font-medium mb-1">
-                                Photo
+                                Fichier (image/video/text/document)
                             </label>
                             <input
+                                ref={fileInputRef}
                                 type="file"
                                 name="attachments"
                                 id="attachments"
-                                accept="image/*"
                                 className="
                                     p-2 
                                     text-gray-700 
@@ -153,13 +198,38 @@ function Form({form, setForm, submit }: {form: form, setForm: React.Dispatch<Rea
                                 onChange={handleChange}
                                 multiple
                             />
-                            {/* {preview && (
-                                <img
-                                    src={preview}
-                                    alt="Aperçu"
-                                    className="mt-2 w-28 h-28 object-cover rounded-full border border-gray-300 shadow-sm"
-                                />
-                            )} */}
+                            <div className="flex gap-2 flex-wrap">
+                                {preview.map((e: filePreview, index: number) =>
+                                    e.type.startsWith('image') ?
+                                        (
+                                            <Preview fn={() => deleteAttachment(index)}>
+                                                <img
+                                                    src={e.url}
+                                                    alt="Aperçu"
+                                                    className="w-28 h-28 object-cover rounded-xl border border-gray-300 shadow-sm"
+                                                />
+                                            </Preview>
+
+                                        ) : e.type.startsWith('video') ? (
+                                            <Preview fn={() => deleteAttachment(index)}>
+                                                <video className='w-28 h-28' controls src={e.url}></video>
+                                            </Preview>
+                                        ) : (
+                                            <Preview fn={() => deleteAttachment(index)}>
+                                                <div className="p-5 px-6 max-w-[200px] bg-gray-100 rounded-2xl">
+
+                                                    <p className="text-sm max-h-[45px] overflow-hidden text-gray-800 ">
+                                                        {e.name}
+                                                    </p>
+                                                    <p className="text-gray-500">
+                                                        {'document' + ' ' + '[' + e.name.split('.')[e.name.split.length - 1] + ']'}
+                                                    </p>
+                                                </div>
+                                            </Preview>
+                                        )
+                                )
+                                }
+                            </div>
                         </div>
 
                     </div>
@@ -216,7 +286,6 @@ function Form({form, setForm, submit }: {form: form, setForm: React.Dispatch<Rea
                                                     <input type="radio"
                                                         name="is_correct"
                                                         checked={e.is_correct}
-                                                        name="is_correct"
                                                         onChange={() => updateTruth(e.id)} id="" className='hidden peer accent-green-400' />
                                                     <div className="rounded-full w-4 h-4 border-red-400 border-2 peer-checked:bg-green-500
                                         peer-checked:border-green-200">
