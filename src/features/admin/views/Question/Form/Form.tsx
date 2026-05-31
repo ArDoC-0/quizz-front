@@ -54,7 +54,7 @@ function Form({ form, setForm, submit }: { form: form, setForm: React.Dispatch<R
             if (name === 'subject_id') {
                 setForm(prev => ({
                     ...prev,
-                    subject_id: Array.from(e.target.selectedOptions, option => option.value)
+                    subject_id: Array.from(e.target.selectedOptions, option => Number(option.value))
                 }));
             } else {
                 if (name === 'is_runnable') {
