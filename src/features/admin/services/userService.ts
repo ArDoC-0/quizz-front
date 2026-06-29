@@ -10,5 +10,6 @@ export const userService = {
 
     trainers: () => {
         return professors()
-    }
+    },
+
 }

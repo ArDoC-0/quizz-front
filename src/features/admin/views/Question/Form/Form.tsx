@@ -1,13 +1,14 @@
-import React, { useRef, useState, type ChangeEvent, type Dispatch } from 'react'
+import React, { useEffect, useRef, useState, type ChangeEvent, type Dispatch } from 'react'
 import './form.scss'
 import Preview from '../../components/Preview'
 import { data } from 'react-router-dom'
+import { createRubrik, deleteRubrik, subject } from '../../../services/questionService'
 
 export interface form {
     question: string
     duration: number | string
     score: number | string
-    attachments?:  File[] | []
+    attachments?: File[] | []
     subject_id?: number[]
     code: string
     answers?: answer[]
@@ -30,13 +31,17 @@ function Form({ form, setForm, submit }: { form: form, setForm: React.Dispatch<R
 
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [preview, setPreview] = useState<filePreview[]>([]);
-    
+
     const [questionType, setQuestionType] = useState<'qcm' | 'redaction'>('qcm')
+
+    const [subjects, setSubjects] = useState<unknown>([{ id: 1, name: 'PHP' }, { id: 2, name: 'JS' },])
+
+    const [newRubrik, setNewRubrik] = useState('')
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLInputElement | HTMLSelectElement, Element>) => {
         const { name, value, files } = e.target as HTMLInputElement;
         if (name === "attachments" && files) {
-            
+
             setForm((prev) => ({ ...prev, attachments: Array.from(files) }))
             const previews = []
             for (let index = 0; index < files.length; index++) {
@@ -110,7 +115,7 @@ function Form({ form, setForm, submit }: { form: form, setForm: React.Dispatch<R
         const dataTransfer = new DataTransfer()
 
         for (let i = 0; i < attachments.length; i++) {
-            if(index !== i){
+            if (index !== i) {
                 dataTransfer.items.add(attachments[i])
             }
         }
@@ -118,15 +123,40 @@ function Form({ form, setForm, submit }: { form: form, setForm: React.Dispatch<R
         fileInputRef.current.files = dataTransfer.files
         setForm({
             ...form,
-            attachments: attachments?.filter((_, i) => i!==index)
+            attachments: attachments?.filter((_, i) => i !== index)
         })
 
         setPreview([
-            ...preview.filter((_, i: number)=> i !== index)])
+            ...preview.filter((_, i: number) => i !== index)])
+    }
+
+    const createSubject = async (newRubrik: string)=> {
+        const response = await createRubrik({name: newRubrik})
+        const subjects = await subject()
+        setSubjects(subjects.data)
+        console.log(response.data);
+    }
+
+    const deleteSubject = async (id: number) => {
+        const response = await deleteRubrik(id)
+        const subjects = await subject()
+        setSubjects(subjects.data)
+        console.log(response.data);
     }
 
     console.log(form, questionType, preview);
 
+    useEffect(() => {
+        (async () => {
+            const rubriks = await subject()
+            setSubjects(rubriks.data)
+
+            console.log(rubriks);
+        })()
+        return () => {
+
+        }
+    }, [])
     return (
         <div className=" grid grid-cols-3 gap-2">
 
@@ -135,7 +165,7 @@ function Form({ form, setForm, submit }: { form: form, setForm: React.Dispatch<R
                 <form onSubmit={(e) => {
                     e.preventDefault()
                     submit()
-                    }} className="p-4">
+                }} className="p-4">
 
                     <textarea onChange={handleChange} name='question' placeholder='Ecrire ....' className="editor mb-4 border border-gray-300 rounded-3xl p-4 w-full">
 
@@ -154,17 +184,48 @@ function Form({ form, setForm, submit }: { form: form, setForm: React.Dispatch<R
                             </label>
                             <input type="number" name="score" onChange={handleChange} className='w-full' placeholder='2 points' id="score" />
                         </div>
-                        <select multiple name="subject_id" onChange={handleChange} className='subjects b-gray-300 mb-4 text-[1rem] py-1 px-2 rounded-xl ' id="">
-                            <option disabled className='disabled'>
-                                Choisir le sujet
-                            </option>
-                            <option value="1">
-                                PHP
-                            </option>
-                            <option value="2">
-                                PDO
-                            </option>
-                        </select>
+                        <div className="py-1 px-2 subjects b-gray-300 mb-4 text-[1rem] overflow-auto rounded-xl w-full">
+
+                            <div className='w-full max-h-[200px] overflow-auto' id="">
+                                <h3 className='p-2 disabled'>
+                                    Choisir le sujet
+                                </h3>
+                                {
+                                    subjects.map(e => (
+                                        <div
+                                            className={`flex py-1 px-2 justify-between relative ${form.subject_id?.find(id => id == e.id)? 'bg-blue-200': ''}`} >
+                                            <div className='w-full' onClick={() => {
+                                                const subjectsList = form.subject_id
+                                                if (subjectsList?.find(id => id == e.id)) {
+                                                    subjectsList?.splice(subjectsList.indexOf(e.id), 1)
+                                                    setForm({
+                                                        ...form,
+                                                        subject_id: subjectsList
+                                                    })
+                                                } else {
+                                                    setForm({
+                                                        ...form,
+                                                        subject_id: [...subjectsList, e.id]
+                                                    })
+                                                }
+                                            }}>
+                                                {e.name}
+                                            </div>
+                                            <button 
+                                            onClick={(h)=> {deleteSubject(e.id)}} className='cursor-pointer text-red-400 font-bold text-2xl'>x</button>
+                                        </div>
+                                    ))
+                                }
+
+                            </div>
+                            <form className='flex justify-between'>
+                                {/* <div className="flex gap-1"> */}
+                                <input onChange={(e)=> setNewRubrik(e.target.value)}  type='text' placeholder='Créer un nouveau ...' className='border border-gray-300 w-full px-4 py-2' />
+                                <button onClick={()=> createSubject(newRubrik)} type="button" className='bg-green-400 cursor-pointer text-white font-semibold px-2 py-1'>Créer</button>
+                                {/* </div> */}
+                            </form>
+
+                        </div>
 
                         <div className="mb-4 w-full">
                             <label htmlFor="code" className="text-gray-600 text-sm font-medium">
@@ -327,7 +388,8 @@ function Form({ form, setForm, submit }: { form: form, setForm: React.Dispatch<R
                 </form>
             </div>
 
-            <div className="rounded-3xl bg-white">
+            <div className="rounded-3xl p-4 bg-white">
+
 
             </div>
         </div>
