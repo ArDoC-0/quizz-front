@@ -1,9 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authSlice from "../features/auth/authSlice";
+import globalTimerSlice from "../features/Student/globalTimerSlice"
+import questionTimeSlice from "../features/Student/questionTimeSlice"
+import questionsSlice from "../features/Student/questionsSlice"
+import answersSlice from "../features/Student/answersSlice"
 
 export const store = configureStore({
     reducer: {
-        auth: authSlice
+        auth: authSlice,
+        globalTimer: globalTimerSlice,
+        questionTimeSlice: questionTimeSlice,
+        questions: questionsSlice,
+        answers: answersSlice
     },
 })
 

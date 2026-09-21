@@ -3,6 +3,7 @@ import "./sidebar.scss"
 import Header from './Header';
 import { useAppSelector } from '../hooks/hooks';
 import { roleName } from '../utils/utils';
+import { Link, NavLink } from 'react-router-dom';
 
 type menuItems = {
   name: string,
@@ -23,6 +24,7 @@ const Sidebar = ({menuItems, role}:{menuItems: menuItems[], role:string})  => {
 
         <nav className="flex-1 mt-4">
           {menuItems.map((item: menuItems, index: number) => (
+            <Link to={'/admin/question/create'}>
             <div
               key={index}
               className={`sidebar-item flex items-center px-6 py-4 cursor-pointer hover:text-white ${index === 0 ? 'active' : ''}`}
@@ -30,6 +32,7 @@ const Sidebar = ({menuItems, role}:{menuItems: menuItems[], role:string})  => {
               <span className="mr-3 text-xl">{item.icon}</span>
               <span className="font-medium">{item.name}</span>
             </div>
+              </Link>
           ))}
         </nav>
 

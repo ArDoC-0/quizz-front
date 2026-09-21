@@ -14,7 +14,6 @@ const initialState: AuthState = {
   isInitialized: false,
 };
 
-// Action asynchrone pour vérifier la session au chargement
 export const initializeAuth = createAsyncThunk<user | void >('auth/initialize', async () => {
   const response = await authServices.me();
   return response.data.data;

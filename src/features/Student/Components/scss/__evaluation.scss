@@ -1,0 +1,57 @@
+// src/styles/Layout.scss
+$sidebar-bg: #0f172a;
+$accent-color: #3b82f6;
+@font-face {
+  font-family: "barlow";
+  src: url("./BarlowCondensed-Bold.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.question{
+    // box-shadow: 1px 1px 5px rgba(128, 128, 128, 0.39);
+    border-bottom: solid 1px rgba(146, 144, 144, 0.212);
+    margin-bottom: 2rem;
+}
+.answer {
+    box-shadow: 0 0px 3px rgba(128, 128, 128, 0.541);
+    background: white;
+    margin-bottom: 1.5rem;
+    
+}
+
+.answer:hover{
+        scale: 1.05;
+        transition: 0.5s;
+    }
+
+.selected{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 125%;
+    background: $accent-color;
+}
+.title{
+    width: 20%;
+    text-align: right;
+}
+.timer{
+    background: #3b83f631;
+    &-icon{
+
+        color: #3b82f6;
+    }
+}
+.body-section{
+    // background: rgba(247, 246, 246, 0.116);
+    background: rgba(163, 198, 255, 0.04);;
+}
+.second-timer{
+    font-family: 'barlow'
+}
+.redaction-zone{
+    textarea{
+        box-shadow: 0 0 5px rgba(128, 128, 128, 0.671);
+    }
+}

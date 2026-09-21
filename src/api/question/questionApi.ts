@@ -5,7 +5,8 @@ const urls = {
     create: '/api/question/create',
     subjects: '/api/subjects',
     createSubject: '/api/subject',
-    deleteSubject: '/api/subject'
+    deleteSubject: '/api/subject',
+    downloadFile: '/api/download'
 
 }
 
@@ -25,4 +26,6 @@ export const deleteSubject = async (id: number) => {
     return await api.delete(urls.deleteSubject+`/${id}`, {})
 }
 
-
+export const downloadFile = async (path: string) => {
+    return await api.get<Blob>(urls.downloadFile + `/${path}`, {responseType: 'blob'})
+}

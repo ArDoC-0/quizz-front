@@ -12,7 +12,7 @@ function App() {
   const dispatch = useAppDispatch()
   useEffect(()=> {
     dispatch(initializeAuth())
-  })
+  }, [])
   return <RouterProvider router={router}/>
 }
 

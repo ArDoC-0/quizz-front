@@ -20,6 +20,7 @@ export default function CreateUserForm() {
     const [response, setResponse] = useState<response>({
         identifiant: ''
     })
+    const [preview, setPreview] = useState<string>('')
     const [trainers, setTrainers] = useState<trainers>([])
 
     const [formvalid, setFormValid] = useState(false)
