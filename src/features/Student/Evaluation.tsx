@@ -14,6 +14,7 @@ import { downloadAttachment } from '../admin/services/questionService'
 import type { answer } from '../admin/views/Question/Form/Form'
 import { addNewQcmAnswer, addNewRedactionAnswer, type qcm_answers, type redaction_answers, type submitAnswers } from './answersSlice'
 import useNext from './Hooks/useNext'
+import ProgressionBar from './Components/ProgressionBar'
 
 function Evaluation() {
 
@@ -139,7 +140,7 @@ function Evaluation() {
         <div className='bg-white h-dvh items-center'>
             <div className=" py-4">
                 <div className='flex items-center justify-between gap-4 py-2 w-[60%] mx-auto'>
-                    <div className="w-full">
+                    {/* <div className="w-full">
                         <h3 className="text-right font-semibold w-25 text-green-400">
                             25%
                         </h3>
@@ -148,8 +149,9 @@ function Evaluation() {
 
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
+                    {questionsSet.questions.length > 1 ?(<ProgressionBar total={questionsSet.questions.length} current={currentIndex+1} />):''}
                     <Timer remainingTime={globalTime} />
                 </div>
                 <div className="body-section m-auto min-h-[600px] w-full px-4 bg-gray-50">
