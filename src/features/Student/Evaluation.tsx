@@ -13,6 +13,7 @@ import { getNameFromPath } from '../../shared/utils/utils'
 import { downloadAttachment } from '../admin/services/questionService'
 import type { answer } from '../admin/views/Question/Form/Form'
 import { addNewQcmAnswer, addNewRedactionAnswer, type qcm_answers, type redaction_answers, type submitAnswers } from './answersSlice'
+import useNext from './Hooks/useNext'
 
 function Evaluation() {
 
@@ -24,21 +25,24 @@ function Evaluation() {
     const questionsSet = useAppSelector(state => state.questions)
     const [isAnswerValid, setIsAnswerValid] = useState(false)
     const [qcmanswerUnit, setQcmAnswerUnit] = useState<qcm_answers>({
-        answer_ids: [],
-        question_id: 0
-    })
+                answer_ids: [],
+                question_id: 0
+            })
 
     const [redactionAnswerUnit, setredactionAnswerUnit] = useState<redaction_answers>({
-        answer: '',
-        question_id: 0
-    })
+                    answer: '',
+                    question_id: 0
+                })
+
+    const { next } = useNext()
     const handleOnChange = (e: React.ChangeEvent) => {
         const { name, value } = e.target as HTMLInputElement
         if (name == 'qcm') {
-            setQcmAnswerUnit({
+            setQcmAnswerUnit(() => ({
+                answer_ids: Array.from(e.target.selectedOptions, option => Number(option.value)),
                 question_id: currentQuestion.id,
-                answer_ids: Array.from(e.target.selectedOptions, option => Number(option.value))
-            })
+            }))
+            console.log(qcmanswerUnit)
 
         }
 
@@ -50,35 +54,26 @@ function Evaluation() {
         }
     }
 
-    const next = () => {
-            console.log(qcmanswerUnit)
+    const nextQuestion = () => {
+        console.log(qcmanswerUnit)
 
         if (qcmanswerUnit.answer_ids.length > 0) {
-            dispatch(addNewQcmAnswer(qcmanswerUnit))
+
+            next({ questionsSet, currentIndex, answerUnit: dispatch(addNewQcmAnswer(qcmanswerUnit)) })
             setQcmAnswerUnit({
                 answer_ids: [],
                 question_id: 0
             })
-            dispatch(incrementCurrentIndex())
-            dispatch(setCurrentQuestion({
-                    question: questionsSet.questions[currentIndex + 1],
-                    seconds: questionsSet.questions[currentIndex + 1].duration,
-                    index: currentIndex + 1
-                }))
+
         } else {
             if (redactionAnswerUnit.answer.length > 0) {
                 dispatch(addNewRedactionAnswer(redactionAnswerUnit))
+                next({ questionsSet, currentIndex, answerUnit: dispatch(addNewRedactionAnswer(redactionAnswerUnit)) })
+
                 setredactionAnswerUnit({
                     answer: '',
                     question_id: 0
                 })
-
-                dispatch(incrementCurrentIndex())
-                dispatch(setCurrentQuestion({
-                    question: questionsSet.questions[currentIndex + 1],
-                    seconds: questionsSet.questions[currentIndex + 1].duration,
-                    index: currentIndex + 1
-                }))
             }
         }
 
@@ -108,22 +103,38 @@ function Evaluation() {
         }
     }, [])
     useEffect(() => {
-        console.log(currentQuestion)
-        dispatch(setCurrentQuestion({
-            question: questionsSet.questions[currentIndex],
-            index: currentIndex,
-            seconds: questionsSet.questions[currentIndex].duration
-        }))
+        // console.log(currentQuestion)
+        if(questionsSet.questions.length > 1){
 
-        const timer = setInterval(() => {
-            dispatch(decrementSingleTime())
-        }, 1000)
-
-
-        return () => {
-            clearInterval(timer)
+            dispatch(setCurrentQuestion({
+                question: questionsSet.questions[currentIndex],
+                index: currentIndex,
+                seconds: questionsSet.questions[currentIndex].duration
+            }))
+            
+            const timer = setInterval(() => {
+                dispatch(decrementSingleTime())
+            }, 1000)
+            
+            
+            return () => {
+                clearInterval(timer)
+            }
         }
-    }, [questionsSet, dispatch])
+    }, [questionsSet])
+
+    useEffect(() => {
+        if (singleTime === 0) {
+            next({questionsSet, currentIndex, answerUnit:
+                dispatch(addNewQcmAnswer({answer_ids:[], question_id: currentQuestion.id})) })
+        }
+    }, [singleTime])
+
+    useEffect(() => {
+        if (globalTime === 0) {
+
+        }
+    }, [globalTime])
     return (
         <div className='bg-white h-dvh items-center'>
             <div className=" py-4">
@@ -145,7 +156,7 @@ function Evaluation() {
                     <div className="w-[60vw] mx-auto">
 
                         <div className="py-4 question">
-                            <p className="text-center text-gray-700 text-md font-semibold mb-1">{`Question ${currentIndex+1}`}</p>
+                            <p className="text-center text-gray-700 text-md font-semibold mb-1">{`Question ${currentIndex + 1}`}</p>
                             <p className="text-gray-900  font-bold text-xl mb-4 text-center">
                                 <SingleTimer remainingTime={singleTime} />
                             </p>
@@ -193,20 +204,15 @@ function Evaluation() {
                                 {
                                     currentQuestion.answers.map((e: answer) => {
                                         return (
-                                            <option value="" className='answer overflow-visible'>
+                                            <option value={e.id} className='answer overflow-visible'>
 
-                                                <label htmlFor={e.id}>
-
-                                                    <div className="answer rounded-sm relative m-auto py-[10px] pe-4 ps-[4rem] flex justify-between">
-                                                        <div className="selected absolute top-0 left-0 p-[1px] h-full"></div>
-                                                        <div className="">
-                                                            {e.label}
-                                                        </div>
-                                                        <div className="">
-                                                            <input type="checkbox" className='border-0' value={e.id} name="qcm" id={e.id} />
-                                                        </div>
+                                                <div className="answer rounded-sm relative m-auto py-[10px] pe-4 ps-[4rem] flex justify-between">
+                                                    <div className="selected absolute top-0 left-0 p-[1px] h-full"></div>
+                                                    <div className="">
+                                                        {e.label}
                                                     </div>
-                                                </label>
+                                                </div>
+
                                             </option>
                                         )
                                     })
@@ -219,7 +225,7 @@ function Evaluation() {
                                 <textarea onChange={(e) => handleOnChange(e)} className='w-full rounded-2xl min-h-[450px] mb-2 shadow-xl p-4' placeholder='Composer ici ...' name="redaction" id=""></textarea>
                             </div>) : ''
                         }
-                        <button onClick={next} className='flex hover:bg-green-700 rounded-md me-2 bg-green-500 text-white p-2 text-center justify-center ms-auto'>
+                        <button onClick={nextQuestion} className='flex hover:bg-green-700 rounded-md me-2 bg-green-500 text-white p-2 text-center justify-center ms-auto'>
                             Suivant
                             <ChevronRight />
                         </button>

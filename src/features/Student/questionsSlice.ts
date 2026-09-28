@@ -15,8 +15,10 @@ export interface question {
     answers: null | answer[],
     attachments: [] | attachment[]
 }
-
-const questionState: { questions: question[] } = {
+ export interface questionState {
+    questions: question[] 
+ }
+ const questionState: { questions: question[] } = {
     questions: [{
         id:0,
         question: '',

@@ -13,14 +13,14 @@ const singleTimerState = {
     question: {
         id: 0,
         question: '',
-        duration: 0,
+        duration: 9,
         score: null,
         code: null,
         is_runnable: null,
         answers: [],
         attachments: []
     },
-    seconds: 0,
+    seconds: 9,
     index: 0
 }
 

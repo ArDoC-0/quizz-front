@@ -7,8 +7,9 @@ export const roles = {
 export const questions =
     [
         {
+            id: 1,
             question: "Quelle est la capitale de Madagascar ?",
-            duration: 240,
+            duration: 200,
             score: 1,
             code: null,
             is_runnable: false,
@@ -23,12 +24,12 @@ export const questions =
 
             answers: [
                 {
-                    id: "a1",
+                    id: 1,
                     label: "Antananarivo",
                     is_correct: true
                 },
                 {
-                    id: "a2",
+                    id: 2,
                     label: "Toamasina",
                     is_correct: false
                 },
@@ -46,8 +47,9 @@ export const questions =
         },
 
         {
+            id: 2,
             question: "Quel langage est principalement utilisé avec Laravel ?",
-            duration: 240,
+            duration: 5,
             score: 1,
             code: null,
             is_runnable: false,
@@ -57,12 +59,12 @@ export const questions =
 
             answers: [
                 {
-                    id: "b1",
+                    id: 1,
                     label: "PHP",
                     is_correct: true
                 },
                 {
-                    id: "b2",
+                    id: 2,
                     label: "Python",
                     is_correct: false
                 },
@@ -81,7 +83,7 @@ export const questions =
 
         {
             question: "Quelle est la valeur de 2 + 2 ?",
-            duration: 240,
+            duration: 5,
             score: 1,
             code: null,
             is_runnable: false,
