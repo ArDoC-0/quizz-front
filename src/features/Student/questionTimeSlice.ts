@@ -41,9 +41,12 @@ const questionTimeSlice = createSlice({
         incrementCurrentIndex: (state: questionTime) => {
             state.index += 1
 
-        }
+        },
+        setIndex: (state: questionTime, action: {payload: number}) => {
+            state.index = action.payload
+        },
     }
 })
 
-export const { setCurrentQuestion, incrementCurrentIndex, decrementSingleTime } = questionTimeSlice.actions
+export const { setCurrentQuestion,setIndex, incrementCurrentIndex, decrementSingleTime } = questionTimeSlice.actions
 export default questionTimeSlice.reducer

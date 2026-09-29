@@ -5,16 +5,17 @@ import Timer from './Components/Timer'
 import { useAppDispatch, useAppSelector } from '../../shared/hooks/hooks'
 import { decrementTime, setTime } from './globalTimerSlice'
 import SingleTimer from './Components/SingleTimer'
-import { decrementSingleTime, incrementCurrentIndex, setCurrentQuestion } from './questionTimeSlice'
+import { decrementSingleTime, incrementCurrentIndex, setCurrentQuestion, setIndex } from './questionTimeSlice'
 import { questions } from '../../shared/constants/constants'
-import { setQuestionSet, type attachment } from './questionsSlice'
+import { setQuestionSet, type attachment, type question } from './questionsSlice'
 import { Link } from 'react-router-dom'
 import { getNameFromPath } from '../../shared/utils/utils'
 import { downloadAttachment } from '../admin/services/questionService'
 import type { answer } from '../admin/views/Question/Form/Form'
-import { addNewQcmAnswer, addNewRedactionAnswer, type qcm_answers, type redaction_answers, type submitAnswers } from './answersSlice'
+import { addNewQcmAnswer, addNewQcmAnswerFromArray, addNewRedactionAnswer, addNewRedactionAnswerFromArray, type qcm_answers, type redaction_answers, type submitAnswers } from './answersSlice'
 import useNext from './Hooks/useNext'
 import ProgressionBar from './Components/ProgressionBar'
+import Finish from './Components/Finish'
 
 function Evaluation() {
 
@@ -26,14 +27,14 @@ function Evaluation() {
     const questionsSet = useAppSelector(state => state.questions)
     const [isAnswerValid, setIsAnswerValid] = useState(false)
     const [qcmanswerUnit, setQcmAnswerUnit] = useState<qcm_answers>({
-                answer_ids: [],
-                question_id: 0
-            })
+        answer_ids: [],
+        question_id: 0
+    })
 
     const [redactionAnswerUnit, setredactionAnswerUnit] = useState<redaction_answers>({
-                    answer: '',
-                    question_id: 0
-                })
+        answer: '',
+        question_id: 0
+    })
 
     const { next } = useNext()
     const handleOnChange = (e: React.ChangeEvent) => {
@@ -68,7 +69,6 @@ function Evaluation() {
 
         } else {
             if (redactionAnswerUnit.answer.length > 0) {
-                dispatch(addNewRedactionAnswer(redactionAnswerUnit))
                 next({ questionsSet, currentIndex, answerUnit: dispatch(addNewRedactionAnswer(redactionAnswerUnit)) })
 
                 setredactionAnswerUnit({
@@ -90,6 +90,22 @@ function Evaluation() {
         link.click()
     }
 
+    const skip = () => {
+        if (currentQuestion.answers.length > 0) {
+
+            next({
+                questionsSet, currentIndex, answerUnit:
+                    dispatch(addNewQcmAnswer({ answer_ids: [], question_id: currentQuestion.id }))
+            })
+        } else {
+            next({
+                questionsSet, currentIndex, answerUnit:
+                    dispatch(addNewRedactionAnswer({ answer: '', question_id: currentQuestion.id }))
+            })
+        }
+
+    }
+
     useEffect(() => {
         dispatch(setQuestionSet(questions))
 
@@ -102,22 +118,24 @@ function Evaluation() {
         return () => {
             clearInterval(global)
         }
-    }, [])
+    }, [dispatch])
     useEffect(() => {
         // console.log(currentQuestion)
-        if(questionsSet.questions.length > 1){
+        if (questionsSet.questions.length > 1) {
 
             dispatch(setCurrentQuestion({
                 question: questionsSet.questions[currentIndex],
                 index: currentIndex,
                 seconds: questionsSet.questions[currentIndex].duration
             }))
-            
+
+            dispatch(setTime({ seconds: questionsSet.questions.reduce((prev: number, current) => prev + current.duration, 0) }))
+
             const timer = setInterval(() => {
                 dispatch(decrementSingleTime())
             }, 1000)
-            
-            
+
+
             return () => {
                 clearInterval(timer)
             }
@@ -125,33 +143,55 @@ function Evaluation() {
     }, [questionsSet])
 
     useEffect(() => {
-        if (singleTime === 0) {
-            next({questionsSet, currentIndex, answerUnit:
-                dispatch(addNewQcmAnswer({answer_ids:[], question_id: currentQuestion.id})) })
-        }
-    }, [singleTime])
+        if (globalTime === 1) {
+            let answers = {
+                qcm_answers: [],
+                redaction_answers: []
+            }
+            let finalIndex = currentIndex + 1
+            for (let index = currentIndex; index + 1 < questionsSet.questions.length; index++) {
+                finalIndex++
+                console.log(finalIndex);
 
-    useEffect(() => {
-        if (globalTime === 0) {
+                if (questionsSet.questions[index]?.answers.length > 0) {
+                    console.log(questionsSet.questions[index])
+                    answers.qcm_answers = [
+                        ...answers.qcm_answers,
+                        {
+                            question_id: questionsSet.questions[index].id,
+                            answer_ids: []
+                        }
+                    ]
+
+                } else {
+
+                    answers.redaction_answers = [
+                        ...answers.redaction_answers,
+                        {
+                            question_id: questionsSet.questions[index].id,
+                            answer: ''
+                        }
+                    ]
+                }
+            }
+            next({
+                questionsSet, currentIndex, answerUnit:
+                    dispatch(addNewQcmAnswerFromArray(answers.qcm_answers))
+            })
+            next({
+                questionsSet, currentIndex, answerUnit:
+                    dispatch(addNewRedactionAnswerFromArray(answers.redaction_answers))
+            })
+            dispatch(setIndex(finalIndex))
 
         }
     }, [globalTime])
-    return (
+    return currentIndex + 1 > questionsSet.questions.length ? <Finish /> : (
         <div className='bg-white h-dvh items-center'>
             <div className=" py-4">
                 <div className='flex items-center justify-between gap-4 py-2 w-[60%] mx-auto'>
-                    {/* <div className="w-full">
-                        <h3 className="text-right font-semibold w-25 text-green-400">
-                            25%
-                        </h3>
-                        <div className="w-90 bg-gray-300 rounded-xl overflow-hidden">
-                            <div className="w-65 p-1 bg-green-400">
 
-                            </div>
-                        </div>
-                    </div> */}
-
-                    {questionsSet.questions.length > 1 ?(<ProgressionBar total={questionsSet.questions.length} current={currentIndex+1} />):''}
+                    {questionsSet.questions.length > 1 ? (<ProgressionBar total={questionsSet.questions.length} current={currentIndex + 1} />) : ''}
                     <Timer remainingTime={globalTime} />
                 </div>
                 <div className="body-section m-auto min-h-[600px] w-full px-4 bg-gray-50">
@@ -167,7 +207,7 @@ function Evaluation() {
                                 {currentQuestion.question}
                             </p>
                             {
-                                currentQuestion.code ? (<div className="h-[250px] bg-gray-900 mb-4">
+                                currentQuestion.code ? (<div className="h-[250px] text-white p-2 bg-gray-900 mb-4">
                                     {currentQuestion.code}
                                 </div>) : ''
                             }
@@ -200,7 +240,7 @@ function Evaluation() {
                         </div>
 
                         <div className="mt-4 mx-auto">
-                            <select onChange={
+                            {currentQuestion.answers.length > 0 ? (<select onChange={
                                 (e: React.ChangeEvent) => handleOnChange(e)
                             } name="qcm" id="" className='py-2 overflow-x-visible px-8 min-h-[260px] w-full' multiple>
                                 {
@@ -219,18 +259,20 @@ function Evaluation() {
                                         )
                                     })
                                 }
-                            </select>
-                        </div>
-
-                        {
-                            currentQuestion.answers.length == 0 ? (<div className="redaction-zone">
+                            </select>) : (<div className="redaction-zone">
                                 <textarea onChange={(e) => handleOnChange(e)} className='w-full rounded-2xl min-h-[450px] mb-2 shadow-xl p-4' placeholder='Composer ici ...' name="redaction" id=""></textarea>
-                            </div>) : ''
-                        }
-                        <button onClick={nextQuestion} className='flex hover:bg-green-700 rounded-md me-2 bg-green-500 text-white p-2 text-center justify-center ms-auto'>
-                            Suivant
-                            <ChevronRight />
-                        </button>
+                            </div>)}
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <button onClick={skip} className='flex w-25 hover:bg-gray-100 rounded-md me-2 shadow shadow-gray-400 text-gray-500 p-2 text-center justify-center '>
+                                Passer
+                            </button>
+                            <button onClick={nextQuestion} className='flex hover:bg-green-700 rounded-md me-2 bg-green-500 text-white p-2 text-center justify-center '>
+                                Suivant
+                                <ChevronRight />
+                            </button>
+
+                        </div>
                     </div>
 
                 </div>

@@ -8,7 +8,7 @@ export interface attachment {
 export interface question {
     id: number|string
     question: string | null,
-    duration: number | null,
+    duration: number,
     score: number | null,
     code: string | null,
     is_runnable: boolean | null,

@@ -16,14 +16,17 @@ const useNext = () => {
     const next = ({ questionsSet, currentIndex, answerUnit }: useNext) => {
         if (questionsSet.questions.length > 1) {
             answerUnit
-
             dispatch(incrementCurrentIndex())
 
-            dispatch(setCurrentQuestion({
-                question: questionsSet.questions[currentIndex + 1],
-                seconds: questionsSet.questions[currentIndex + 1].duration,
-                index: currentIndex + 1
-            }))
+            if(questionsSet.questions.length > 1+currentIndex)
+            {
+                dispatch(setCurrentQuestion({
+                    question: questionsSet.questions[currentIndex + 1],
+                    seconds: questionsSet.questions[currentIndex + 1].duration,
+                    index: currentIndex + 1
+                }))
+            }
+
         }
     }
     return { next }

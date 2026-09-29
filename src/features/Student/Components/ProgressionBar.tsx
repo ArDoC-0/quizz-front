@@ -11,7 +11,7 @@ function ProgressionBar({ total, current }: { total: number, current: number }) 
             <h3 style={{marginInlineStart: ratio+'%'}} className={` w-fit duration-500 translate-x-[-50%] text-left font-semibold w-25 text-green-400`}>
                 {`${ratio}%`}
             </h3>
-            <div  className="w-90 bg-gray-300 rounded-xl overflow-hidden">
+            <div  className="w-90 bg-gray-100 rounded-xl overflow-hidden">
                 <div style={{width: ratio+'%'}} className={`duration-500 p-1 bg-green-400`}>
 
                 </div>

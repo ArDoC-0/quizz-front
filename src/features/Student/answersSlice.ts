@@ -26,25 +26,35 @@ const answersSlice = createSlice({
     name: 'answers',
     initialState: initialState,
     reducers: {
-        addNewQcmAnswer: (state: submitAnswers, action: {payload: qcm_answers})=> {
+        addNewQcmAnswer: (state: submitAnswers, action: { payload: qcm_answers }) => {
             state.qcm_answers = [
                 ...state.qcm_answers,
                 action.payload
             ]
         },
-
-        addNewRedactionAnswer: (state: submitAnswers, action: {payload: redaction_answers})=> {
+        addNewQcmAnswerFromArray: (state: submitAnswers, action: { payload: qcm_answers[] }) => {
+            state.qcm_answers = [
+                ...state.qcm_answers,
+                ...action.payload
+            ]
+        },
+        addNewRedactionAnswer: (state: submitAnswers, action: { payload: redaction_answers }) => {
             state.redaction_answers = [
                 ...state.redaction_answers,
                 action.payload
             ]
         },
-
-        setEvaluationId: (state: submitAnswers, action: {payload: number})=> {
+        addNewRedactionAnswerFromArray: (state: submitAnswers, action: { payload: redaction_answers[] }) => {
+            state.redaction_answers = [
+                ...state.redaction_answers,
+                ...action.payload
+            ]
+        },
+        setEvaluationId: (state: submitAnswers, action: { payload: number }) => {
             state.evaluation_id = action.payload
         }
     }
 })
 
-export const {addNewQcmAnswer, addNewRedactionAnswer, setEvaluationId} = answersSlice.actions
+export const { addNewQcmAnswer, addNewRedactionAnswer, setEvaluationId, addNewQcmAnswerFromArray, addNewRedactionAnswerFromArray} = answersSlice.actions
 export default answersSlice.reducer
