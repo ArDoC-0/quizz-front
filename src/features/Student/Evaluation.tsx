@@ -107,17 +107,17 @@ function Evaluation() {
     }
 
     useEffect(() => {
-        dispatch(setQuestionSet(questions))
-
-        console.log(globalTime)
-
-        const global = setInterval(() => {
-            dispatch(decrementTime())
-        }, 1000)
-        console.log(questionsSet)
-        return () => {
-            clearInterval(global)
-        }
+        (async ()=>{
+            await setTimeout(()=> dispatch(setQuestionSet(questions)) , 5000)
+                
+            const global = setInterval(() => {
+                dispatch(decrementTime())
+            }, 1000)
+            console.log(questionsSet)
+            return () => {
+                clearInterval(global)
+            }
+    })()
     }, [dispatch])
     useEffect(() => {
         // console.log(currentQuestion)
