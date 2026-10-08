@@ -1,8 +1,45 @@
+import { oneDark } from '@codemirror/theme-one-dark';
+import { javascript } from '@codemirror/lang-javascript';
+import { php } from '@codemirror/lang-php';
+import { html } from '@codemirror/lang-html';
 export const roles = {
     admin: 1,
     trainer: 2,
     student: 3
 }
+
+export const LINE_BAD = 'bg-red-400/20 shadow-[inset_3px_0_0_#ff8b7d]';
+export const LINE_GOOD = 'bg-emerald-400/15 shadow-[inset_3px_0_0_#4cd39b]';
+
+export const LANGS = { js: javascript, php, html };
+export const LANG_NAMES = { js: 'JavaScript', php: 'PHP', html: 'HTML'};
+export const card = 'rounded-2xl border border-slate-200 bg-white dark:border-[#28324d] dark:bg-[#161e33]';
+export const panel = 'rounded-xl border border-slate-200 bg-slate-100 px-4 py-3.5 dark:border-[#28324d] dark:bg-[#0e1424]';
+export const heading = "font-['Bricolage_Grotesque',sans-serif] leading-tight";
+export const mono = "font-['JetBrains_Mono',monospace]";
+export const focus = 'focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-300';
+
+
+export const STATUS = {
+  ok: {
+    text: 'text-emerald-700 dark:text-emerald-400',
+    border: 'border-emerald-700 dark:border-emerald-400',
+    borderL: 'border-l-emerald-700 dark:border-l-emerald-400',
+    dot: 'bg-emerald-700 dark:bg-emerald-400',
+  },
+  part: {
+    text: 'text-amber-700 dark:text-amber-300',
+    border: 'border-amber-700 dark:border-amber-300',
+    borderL: 'border-l-amber-700 dark:border-l-amber-300',
+    dot: 'bg-amber-600 dark:bg-amber-300',
+  },
+  ko: {
+    text: 'text-red-700 dark:text-red-400',
+    border: 'border-red-700 dark:border-red-400',
+    borderL: 'border-l-red-700 dark:border-l-red-400',
+    dot: 'bg-red-700 dark:bg-red-400',
+  },
+};
 
 export const questions =
     [

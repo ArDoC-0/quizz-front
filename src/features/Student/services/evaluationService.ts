@@ -1,17 +1,17 @@
-import { create, getQuestionSet } from "../../../api/evaluation/evaluationApi"
+import {  isEvalAvailable, start } from "../../../api/evaluation/evaluationApi"
+import { useAppDispatch } from "../../../shared/hooks/hooks"
+import { setTime } from "../globalTimerSlice"
+import { setQuestionSet } from "../questionsSlice"
 
 export const evaluationService = {
-    attempt: async () => {
-        const response = await create()
-        return {success: response.data.success, message: response.data.message}
-    },
 
     checkEvaluationStatus: async () => {
-
+        return (await isEvalAvailable()).data
     },
 
-    questionSet: async () => {
-        const response = await getQuestionSet()
+    start: async () => {
+        const response = await start()
         return response.data
+
     },
 }

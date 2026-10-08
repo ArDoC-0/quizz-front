@@ -16,6 +16,7 @@ import { addNewQcmAnswer, addNewQcmAnswerFromArray, addNewRedactionAnswer, addNe
 import useNext from './Hooks/useNext'
 import ProgressionBar from './Components/ProgressionBar'
 import Finish from './Components/Finish'
+import { evaluationService } from './services/evaluationService'
 
 function Evaluation() {
 
@@ -107,17 +108,28 @@ function Evaluation() {
     }
 
     useEffect(() => {
-        (async ()=>{
-            await setTimeout(()=> dispatch(setQuestionSet(questions)) , 5000)
-                
-            const global = setInterval(() => {
-                dispatch(decrementTime())
-            }, 1000)
-            console.log(questionsSet)
-            return () => {
-                clearInterval(global)
+        (async () => {
+            let global
+
+            const init = async () => {
+                const data = await evaluationService.start()
+
+                dispatch(setQuestionSet(data.questions))
+                dispatch(setTime({ seconds: data.timeLeft }))
+
+                global = setInterval(() => {
+                    dispatch(decrementTime())
+                }, 1000)
             }
-    })()
+
+            init()
+
+            return () => {
+                if (global) {
+                    clearInterval(global)
+                }
+            }
+        })()
     }, [dispatch])
     useEffect(() => {
         // console.log(currentQuestion)
@@ -129,7 +141,7 @@ function Evaluation() {
                 seconds: questionsSet.questions[currentIndex].duration
             }))
 
-            dispatch(setTime({ seconds: questionsSet.questions.reduce((prev: number, current) => prev + current.duration, 0) }))
+            // dispatch(setTime({ seconds: questionsSet.questions.reduce((prev: number, current) => prev + current.duration, 0) }))
 
             const timer = setInterval(() => {
                 dispatch(decrementSingleTime())

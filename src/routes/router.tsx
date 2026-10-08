@@ -11,7 +11,8 @@ import StudentLayout from '../layouts/StudentLayout';
 import Evaluation from '../features/Student/Evaluation';
 import { authServices } from '../features/auth/services/authService';
 import Results from '../features/Student/Results';
-import Correction from '../features/trainer/views/Correction';
+import Correction from '../features/trainer/views/000Correction';
+import RedactionList from '../features/trainer/views/RedactionList';
 
 
 
@@ -97,7 +98,7 @@ export const router = createBrowserRouter([
         path: '/redaction/correction',
         element:
           <ProtectedRoute role={[roles.student, roles.admin,]}>
-            <Correction />
+            <RedactionList />
           </ProtectedRoute>
       }
     ]
