@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom'
 import { getNameFromPath } from '../../shared/utils/utils'
 import { downloadAttachment } from '../admin/services/questionService'
 import type { answer } from '../admin/views/Question/Form/Form'
-import { addNewQcmAnswer, addNewQcmAnswerFromArray, addNewRedactionAnswer, addNewRedactionAnswerFromArray, type qcm_answers, type redaction_answers, type submitAnswers } from './answersSlice'
+import { addNewQcmAnswer, addNewQcmAnswerFromArray, addNewRedactionAnswer, addNewRedactionAnswerFromArray, setEvaluationId, type qcm_answers, type redaction_answers, type submitAnswers } from './answersSlice'
 import useNext from './Hooks/useNext'
 import ProgressionBar from './Components/ProgressionBar'
 import Finish from './Components/Finish'
@@ -23,6 +23,7 @@ function Evaluation() {
     const globalTime = useAppSelector((state) => state.globalTimer.seconds)
     const singleTime = useAppSelector((state) => state.questionTimeSlice.seconds)
     const currentIndex = useAppSelector((state) => state.questionTimeSlice.index)
+        const evaluationId = useAppSelector((state) => state.answers.evaluation_id)
     const currentQuestion = useAppSelector((state) => state.questionTimeSlice.question)
     const dispatch = useAppDispatch()
     const questionsSet = useAppSelector(state => state.questions)
@@ -68,6 +69,7 @@ function Evaluation() {
                 question_id: 0
             })
 
+            evaluationService.submitAnswerUnit({ qcm_answers: qcmanswerUnit })
         } else {
             if (redactionAnswerUnit.answer.length > 0) {
                 next({ questionsSet, currentIndex, answerUnit: dispatch(addNewRedactionAnswer(redactionAnswerUnit)) })
@@ -76,6 +78,8 @@ function Evaluation() {
                     answer: '',
                     question_id: 0
                 })
+                evaluationService.submitAnswerUnit({ redaction_answers: redactionAnswerUnit })
+
             }
         }
 
@@ -92,7 +96,7 @@ function Evaluation() {
     }
 
     const skip = () => {
-        if (currentQuestion.answers.length > 0) {
+        if (currentQuestion.answers == null) {
 
             next({
                 questionsSet, currentIndex, answerUnit:
@@ -116,7 +120,7 @@ function Evaluation() {
 
                 dispatch(setQuestionSet(data.questions))
                 dispatch(setTime({ seconds: data.timeLeft }))
-
+                dispatch(setEvaluationId(data.evaluationId))
                 global = setInterval(() => {
                     dispatch(decrementTime())
                 }, 1000)
@@ -141,8 +145,6 @@ function Evaluation() {
                 seconds: questionsSet.questions[currentIndex].duration
             }))
 
-            // dispatch(setTime({ seconds: questionsSet.questions.reduce((prev: number, current) => prev + current.duration, 0) }))
-
             const timer = setInterval(() => {
                 dispatch(decrementSingleTime())
             }, 1000)
@@ -156,6 +158,7 @@ function Evaluation() {
 
     useEffect(() => {
         if (globalTime === 1) {
+            evaluationService.end(evaluationId)
             let answers = {
                 qcm_answers: [],
                 redaction_answers: []
